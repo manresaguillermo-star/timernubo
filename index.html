@@ -62,8 +62,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
-            const urlHorarios = 'https://raw.githubusercontent.com/manresaguillermo-star/timernubo/main/horarios.json?t=' + Date.now();
-
+            const urlHorarios = 'https://manresaguillermo-star.github.io/timernubo/horarios.json?t=' + Date.now();
             fetch(urlHorarios)
                 .then(response => response.json())
                 .then(HORARIOS => {
