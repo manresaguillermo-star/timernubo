@@ -22,20 +22,20 @@
             text-align: center;
             width: 100%;
             max-width: 400px;
-            padding-top: 18px; /* Más margen arriba */
-            padding-bottom: 12px;
+            padding-top: 12px; /* Margen superior reducido */
+            padding-bottom: 8px; /* Margen inferior reducido */
         }
 
         .titulo {
-            font-size: 11.5px; /* Texto un poco más chico */
+            font-size: 10.5px; /* Título reducido */
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             letter-spacing: 0.2px;
         }
 
         .subtitulo {
-            font-size: 9px;
-            margin-bottom: 12px;
+            font-size: 8px; /* Subtítulo reducido */
+            margin-bottom: 8px;
             color: #b0b0b0;
             text-transform: uppercase;
             letter-spacing: 0.2px;
@@ -44,20 +44,20 @@
 
         .countdown-wrapper {
             display: flex;
-            gap: 5px;
+            gap: 4px;
             justify-content: center;
             align-items: flex-start;
-            margin-bottom: 10px; /* Más margen abajo del timer */
+            margin-bottom: 5px;
         }
 
         .bloque-tiempo { display: flex; flex-direction: column; align-items: center; }
         .digitos-container { display: flex; gap: 2px; }
 
-        /* ESTILOS DEL FLIP CLOCK */
+        /* ESTILOS DEL FLIP CLOCK ACHICADOS */
         .digit {
-            position: relative; width: 18px; height: 24px;
+            position: relative; width: 15px; height: 20px;
             background-color: #4a90e2; border-radius: 3px;
-            font-size: 16px; font-weight: bold; color: #000;
+            font-size: 14px; font-weight: bold; color: #000;
             text-align: center; perspective: 250px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
@@ -69,11 +69,11 @@
             position: absolute; left: 0; width: 100%; height: 50%;
             overflow: hidden; background-color: #4a90e2;
         }
-        .digit .top { top: 0; transform-origin: bottom; line-height: 24px; border-radius: 3px 3px 0 0; }
+        .digit .top { top: 0; transform-origin: bottom; line-height: 20px; border-radius: 3px 3px 0 0; }
         .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 3px 3px; }
         .digit .flap { backface-visibility: hidden; }
         .digit .top-flap {
-            top: 0; transform-origin: bottom; line-height: 24px; z-index: 2;
+            top: 0; transform-origin: bottom; line-height: 20px; z-index: 2;
             animation: flipTop 0.25s ease-in forwards; border-radius: 3px 3px 0 0;
         }
         .digit .bottom-flap {
@@ -84,8 +84,8 @@
         @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
         @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
 
-        .etiqueta { color: #4a90e2; font-size: 8px; margin-top: 4px; }
-        .separador { font-size: 16px; font-weight: bold; color: #4a90e2; margin-top: 2px; }
+        .etiqueta { color: #4a90e2; font-size: 7px; margin-top: 3px; }
+        .separador { font-size: 14px; font-weight: bold; color: #4a90e2; margin-top: 1px; }
     </style>
 </head>
 <body>
@@ -107,16 +107,11 @@
     </div>
 
     <script>
-        // =======================================================================
+        // =====================================================================================================================================================================================================================
         // ⚙️ PANEL DE HORARIOS - CAMBIAR AQUI ⚙️
-        // =======================================================================
-        // - Formato 24hs (Ej: 16.0 = 16:00hs).
-        // - Medias horas llevan .5 (Ej: 19.5 = 19:30hs).
-        // - El Domingo (0) está en 0.0 para que salte directamente al Lunes.
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // =====================================================================================================================================================================================================================
+        // =====================================================================================================================================================================================================================
+        // =====================================================================================================================================================================================================================
         const HORARIOS = {
             1: 16.0, // LUNES
             2: 18.0, // MARTES
@@ -126,11 +121,9 @@
             6: 19.5, // SABADO
             0: 0.0   // DOMINGO (Cerrado)
         };
-        // =======================================================================
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // =====================================================================================================================================================================================================================
+        // =====================================================================================================================================================================================================================
+        // =====================================================================================================================================================================================================================
 
         document.addEventListener("DOMContentLoaded", function() {
             const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
@@ -164,15 +157,12 @@
                 let diaObjetivo = diaActual;
                 let diasSumados = 0;
 
-                // Si ya pasamos el corte de hoy, o si es domingo
                 if (horaActualDecimal >= HORARIOS[diaActual] || diaActual === 0) {
                     diasSumados = 1;
                     diaObjetivo = (diaActual + 1) % 7;
-                    
-                    // Si al sumar un día caemos en domingo, sumamos otro más para ir al lunes
                     if (diaObjetivo === 0) {
                         diasSumados = 2;
-                        diaObjetivo = 1; // Lunes
+                        diaObjetivo = 1; 
                     }
                 }
 
@@ -192,7 +182,6 @@
                     actualizarDigitos('t-m-', minutos);
                     actualizarDigitos('t-s-', segundos);
 
-                    // Lógica del texto destacado (HOY / MAÑANA / EL LUNES)
                     let textoBadge = "HOY";
                     if (diasSumados === 1) textoBadge = "MAÑANA";
                     if (diasSumados === 2) textoBadge = "EL LUNES";
