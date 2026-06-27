@@ -3,46 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer de Envíos Nubo</title>
+    <title>Timer de Envíos</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding: 10px 5px; /* Margen superior para que el texto respire */
             background-color: #111111;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start; /* Clave: alinea desde arriba, no al centro */
+            height: auto;
             overflow: hidden;
         }
 
         .timer-container {
             text-align: center;
-            padding: 15px 10px;
             width: 100%;
-            box-sizing: border-box;
+            max-width: 400px;
         }
 
         .titulo {
-            font-size: 15px;
+            font-size: 13px; /* Más chico para mobile */
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             letter-spacing: 0.2px;
         }
 
         .subtitulo {
             font-size: 9px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             color: #b0b0b0;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.2px;
+            line-height: 1.2;
         }
 
         .countdown-wrapper {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             justify-content: center;
             align-items: flex-start;
         }
@@ -58,14 +58,14 @@
             gap: 2px;
         }
 
-        /* ESTILOS DEL FLIP CLOCK */
+        /* ESTILOS DEL FLIP CLOCK REDUCIDOS */
         .digit {
             position: relative;
-            width: 20px;
-            height: 28px;
+            width: 18px;
+            height: 24px;
             background-color: #4a90e2;
             border-radius: 3px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #000;
             text-align: center;
@@ -96,7 +96,7 @@
         .digit .top {
             top: 0;
             transform-origin: bottom;
-            line-height: 28px;
+            line-height: 24px;
             border-top-left-radius: 3px;
             border-top-right-radius: 3px;
         }
@@ -104,7 +104,7 @@
         .digit .bottom {
             bottom: 0;
             transform-origin: top;
-            line-height: 0; /* Centra el texto en la mitad inferior */
+            line-height: 0;
             border-bottom-left-radius: 3px;
             border-bottom-right-radius: 3px;
         }
@@ -114,7 +114,7 @@
         .digit .top-flap {
             top: 0;
             transform-origin: bottom;
-            line-height: 28px;
+            line-height: 24px;
             z-index: 2;
             animation: flipTop 0.25s ease-in forwards;
             border-top-left-radius: 3px;
@@ -137,12 +137,12 @@
 
         .etiqueta {
             color: #4a90e2;
-            font-size: 9px;
+            font-size: 8px;
             margin-top: 4px;
         }
 
         .separador {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #4a90e2;
             margin-top: 2px;
@@ -189,7 +189,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            
             const horariosCorte = { 0: 12.0, 1: 16.0, 2: 18.0, 3: 16.0, 4: 16.0, 5: 18.0, 6: 19.5 };
             const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
 
@@ -199,11 +198,9 @@
                 return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
             }
 
-            // Motor de animación Flip
             function actualizarFlip(elementId, newValue) {
                 const el = document.getElementById(elementId);
                 const currentTop = el.querySelector('.top').innerText;
-                
                 if (currentTop !== String(newValue)) {
                     el.innerHTML = `
                         <div class="top">${newValue}</div>
@@ -211,8 +208,6 @@
                         <div class="flap top-flap">${currentTop}</div>
                         <div class="flap bottom-flap">${newValue}</div>
                     `;
-                    
-                    // Limpia la animación después de que termina (500ms en total)
                     setTimeout(() => {
                         el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`;
                     }, 500);
