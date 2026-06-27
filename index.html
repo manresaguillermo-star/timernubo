@@ -3,50 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer de Envíos</title>
+    <title>Timer de Envíos Nubo</title>
     <style>
-        /* Reseteo básico para que el iframe no tenga bordes blancos */
         body {
             margin: 0;
             padding: 0;
-            background-color: #141414; /* Mismo fondo que la web */
+            background-color: #111111;
             color: #ffffff;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Ocupa todo el alto del iframe */
-            overflow: hidden; /* Evita barras de scroll */
+            height: 100vh;
+            overflow: hidden;
         }
 
         .timer-container {
             text-align: center;
-            padding: 10px;
+            padding: 15px 10px;
             width: 100%;
             box-sizing: border-box;
         }
 
         .titulo {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-hoy {
-            text-shadow: 2px 0px 0px rgba(255,0,0,0.5), -2px 0px 0px rgba(0,255,255,0.5);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
         }
 
         .subtitulo {
-            font-size: 13px;
-            margin-bottom: 20px;
-            color: #e0e0e0;
+            font-size: 9px;
+            margin-bottom: 15px;
+            color: #b0b0b0;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .countdown-wrapper {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             justify-content: center;
             align-items: flex-start;
         }
@@ -59,31 +55,97 @@
 
         .digitos-container {
             display: flex;
-            gap: 3px;
+            gap: 2px;
         }
 
-        .digito {
+        /* ESTILOS DEL FLIP CLOCK */
+        .digit {
+            position: relative;
+            width: 20px;
+            height: 28px;
             background-color: #4a90e2;
-            color: #000;
-            font-size: 32px;
+            border-radius: 3px;
+            font-size: 20px;
             font-weight: bold;
-            padding: 6px 10px;
-            border-radius: 4px;
-            min-width: 22px;
+            color: #000;
             text-align: center;
+            perspective: 250px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
+
+        .digit::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 5;
+        }
+
+        .digit .top, .digit .bottom, .digit .flap {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            background-color: #4a90e2;
+        }
+
+        .digit .top {
+            top: 0;
+            transform-origin: bottom;
+            line-height: 28px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .digit .bottom {
+            bottom: 0;
+            transform-origin: top;
+            line-height: 0; /* Centra el texto en la mitad inferior */
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+
+        .digit .flap { backface-visibility: hidden; }
+
+        .digit .top-flap {
+            top: 0;
+            transform-origin: bottom;
+            line-height: 28px;
+            z-index: 2;
+            animation: flipTop 0.25s ease-in forwards;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .digit .bottom-flap {
+            bottom: 0;
+            transform-origin: top;
+            line-height: 0;
+            z-index: 1;
+            transform: rotateX(90deg);
+            animation: flipBottom 0.25s ease-out 0.25s forwards;
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+
+        @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
+        @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
 
         .etiqueta {
             color: #4a90e2;
-            font-size: 12px;
-            margin-top: 6px;
+            font-size: 9px;
+            margin-top: 4px;
         }
 
         .separador {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: bold;
             color: #4a90e2;
-            margin-top: 8px;
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -91,38 +153,34 @@
 
     <div class="timer-container">
         <div class="titulo">
-            Envío en el dia 🚀 ➝ Recibilo <span id="nubo-day-badge" class="badge-hoy">HOY</span>
+            Envío en el dia 🚀 ➝ Recibilo <span id="nb-day" style="font-weight: bold;">HOY</span>
         </div>
 
         <div class="subtitulo">
-            RECIBI TU PEDIDO ENTRE LAS <span id="nubo-time-window">00:00 y 00:00HS</span> DEL <span id="nubo-target-day">DIA</span> SI PEDIS ANTES DE:
+            RECIBI TU PEDIDO ENTRE LAS <span id="nb-win">00:00 y 00:00HS</span> DEL <span id="nb-tgt">DIA</span> SI PEDIS ANTES DE:
         </div>
         
         <div class="countdown-wrapper">
             <div class="bloque-tiempo">
                 <div class="digitos-container">
-                    <span id="t-h-1" class="digito">0</span>
-                    <span id="t-h-2" class="digito">0</span>
+                    <div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                    <div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
                 </div>
                 <span class="etiqueta">Horas</span>
             </div>
-
             <div class="separador">:</div>
-
             <div class="bloque-tiempo">
                 <div class="digitos-container">
-                    <span id="t-m-1" class="digito">0</span>
-                    <span id="t-m-2" class="digito">0</span>
+                    <div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                    <div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
                 </div>
                 <span class="etiqueta">Minutos</span>
             </div>
-
             <div class="separador">:</div>
-
             <div class="bloque-tiempo">
                 <div class="digitos-container">
-                    <span id="t-s-1" class="digito">0</span>
-                    <span id="t-s-2" class="digito">0</span>
+                    <div id="t-s-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                    <div id="t-s-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
                 </div>
                 <span class="etiqueta">Segundos</span>
             </div>
@@ -132,17 +190,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             
-            // CONFIGURACIÓN DE HORARIOS DE CORTE
-            const horariosCorte = {
-                0: 12.0, // Domingo
-                1: 16.0, // Lunes
-                2: 18.0, // Martes
-                3: 16.0, // Miércoles
-                4: 16.0, // Jueves
-                5: 18.0, // Viernes
-                6: 19.5  // Sábado (19:30hs)
-            };
-
+            const horariosCorte = { 0: 12.0, 1: 16.0, 2: 18.0, 3: 16.0, 4: 16.0, 5: 18.0, 6: 19.5 };
             const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
 
             function formatearHora(horaDecimal) {
@@ -151,10 +199,30 @@
                 return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
             }
 
+            // Motor de animación Flip
+            function actualizarFlip(elementId, newValue) {
+                const el = document.getElementById(elementId);
+                const currentTop = el.querySelector('.top').innerText;
+                
+                if (currentTop !== String(newValue)) {
+                    el.innerHTML = `
+                        <div class="top">${newValue}</div>
+                        <div class="bottom">${currentTop}</div>
+                        <div class="flap top-flap">${currentTop}</div>
+                        <div class="flap bottom-flap">${newValue}</div>
+                    `;
+                    
+                    // Limpia la animación después de que termina (500ms en total)
+                    setTimeout(() => {
+                        el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`;
+                    }, 500);
+                }
+            }
+
             function actualizarDigitos(idPrefix, valor) {
                 let str = String(valor).padStart(2, '0');
-                document.getElementById(idPrefix + '1').innerText = str[0];
-                document.getElementById(idPrefix + '2').innerText = str[1];
+                actualizarFlip(idPrefix + '1', str[0]);
+                actualizarFlip(idPrefix + '2', str[1]);
             }
 
             function actualizarTimer() {
@@ -189,12 +257,12 @@
                     actualizarDigitos('t-m-', minutos);
                     actualizarDigitos('t-s-', segundos);
 
-                    document.getElementById('nubo-day-badge').innerText = esParaManana ? "MAÑANA" : "HOY";
-                    document.getElementById('nubo-target-day').innerText = nombresDias[diaObjetivoIdx];
+                    document.getElementById('nb-day').innerText = esParaManana ? "MAÑANA" : "HOY";
+                    document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivoIdx];
                     
                     let horaInicio = formatearHora(horaCorteDecimal);
                     let horaFin = formatearHora(horaCorteDecimal + 2);
-                    document.getElementById('nubo-time-window').innerText = horaInicio + " y " + horaFin + "HS";
+                    document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
                 }
             }
 
