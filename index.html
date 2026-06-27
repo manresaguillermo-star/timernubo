@@ -7,13 +7,13 @@
     <style>
         body {
             margin: 0;
-            padding: 10px 5px; /* Margen superior para que el texto respire */
+            padding: 0;
             background-color: #111111;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Clave: alinea desde arriba, no al centro */
+            align-items: flex-start; 
             height: auto;
             overflow: hidden;
         }
@@ -22,10 +22,12 @@
             text-align: center;
             width: 100%;
             max-width: 400px;
+            padding-top: 18px; /* Más margen arriba */
+            padding-bottom: 12px;
         }
 
         .titulo {
-            font-size: 2px; /* Más chico para mobile */
+            font-size: 11.5px; /* Texto un poco más chico */
             font-weight: 600;
             margin-bottom: 5px;
             letter-spacing: 0.2px;
@@ -33,7 +35,7 @@
 
         .subtitulo {
             font-size: 9px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: #b0b0b0;
             text-transform: uppercase;
             letter-spacing: 0.2px;
@@ -45,108 +47,45 @@
             gap: 5px;
             justify-content: center;
             align-items: flex-start;
+            margin-bottom: 10px; /* Más margen abajo del timer */
         }
 
-        .bloque-tiempo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .bloque-tiempo { display: flex; flex-direction: column; align-items: center; }
+        .digitos-container { display: flex; gap: 2px; }
 
-        .digitos-container {
-            display: flex;
-            gap: 2px;
-        }
-
-        /* ESTILOS DEL FLIP CLOCK REDUCIDOS */
+        /* ESTILOS DEL FLIP CLOCK */
         .digit {
-            position: relative;
-            width: 18px;
-            height: 24px;
-            background-color: #4a90e2;
-            border-radius: 3px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #000;
-            text-align: center;
-            perspective: 250px;
+            position: relative; width: 18px; height: 24px;
+            background-color: #4a90e2; border-radius: 3px;
+            font-size: 16px; font-weight: bold; color: #000;
+            text-align: center; perspective: 250px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
-
         .digit::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background-color: rgba(0, 0, 0, 0.4);
-            z-index: 5;
+            content: ""; position: absolute; top: 50%; left: 0;
+            width: 100%; height: 1px; background-color: rgba(0, 0, 0, 0.4); z-index: 5;
         }
-
         .digit .top, .digit .bottom, .digit .flap {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            overflow: hidden;
-            background-color: #4a90e2;
+            position: absolute; left: 0; width: 100%; height: 50%;
+            overflow: hidden; background-color: #4a90e2;
         }
-
-        .digit .top {
-            top: 0;
-            transform-origin: bottom;
-            line-height: 24px;
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-        }
-
-        .digit .bottom {
-            bottom: 0;
-            transform-origin: top;
-            line-height: 0;
-            border-bottom-left-radius: 3px;
-            border-bottom-right-radius: 3px;
-        }
-
+        .digit .top { top: 0; transform-origin: bottom; line-height: 24px; border-radius: 3px 3px 0 0; }
+        .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 3px 3px; }
         .digit .flap { backface-visibility: hidden; }
-
         .digit .top-flap {
-            top: 0;
-            transform-origin: bottom;
-            line-height: 24px;
-            z-index: 2;
-            animation: flipTop 0.25s ease-in forwards;
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
+            top: 0; transform-origin: bottom; line-height: 24px; z-index: 2;
+            animation: flipTop 0.25s ease-in forwards; border-radius: 3px 3px 0 0;
         }
-
         .digit .bottom-flap {
-            bottom: 0;
-            transform-origin: top;
-            line-height: 0;
-            z-index: 1;
-            transform: rotateX(90deg);
-            animation: flipBottom 0.25s ease-out 0.25s forwards;
-            border-bottom-left-radius: 3px;
-            border-bottom-right-radius: 3px;
+            bottom: 0; transform-origin: top; line-height: 0; z-index: 1;
+            transform: rotateX(90deg); animation: flipBottom 0.25s ease-out 0.25s forwards; border-radius: 0 0 3px 3px;
         }
 
         @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
         @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
 
-        .etiqueta {
-            color: #4a90e2;
-            font-size: 8px;
-            margin-top: 4px;
-        }
-
-        .separador {
-            font-size: 16px;
-            font-weight: bold;
-            color: #4a90e2;
-            margin-top: 2px;
-        }
+        .etiqueta { color: #4a90e2; font-size: 8px; margin-top: 4px; }
+        .separador { font-size: 16px; font-weight: bold; color: #4a90e2; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -161,35 +100,32 @@
         </div>
         
         <div class="countdown-wrapper">
-            <div class="bloque-tiempo">
-                <div class="digitos-container">
-                    <div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
-                    <div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
-                </div>
-                <span class="etiqueta">Horas</span>
-            </div>
-            <div class="separador">:</div>
-            <div class="bloque-tiempo">
-                <div class="digitos-container">
-                    <div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
-                    <div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
-                </div>
-                <span class="etiqueta">Minutos</span>
-            </div>
-            <div class="separador">:</div>
-            <div class="bloque-tiempo">
-                <div class="digitos-container">
-                    <div id="t-s-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
-                    <div id="t-s-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
-                </div>
-                <span class="etiqueta">Segundos</span>
-            </div>
+            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Horas</span></div><div class="separador">:</div>
+            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Minutos</span></div><div class="separador">:</div>
+            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-s-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-s-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Segundos</span></div>
         </div>
     </div>
 
     <script>
+        // =======================================================================
+        // ⚙️ PANEL DE HORARIOS - CAMBIAR AQUI ⚙️
+        // =======================================================================
+        // - Formato 24hs (Ej: 16.0 = 16:00hs).
+        // - Medias horas llevan .5 (Ej: 19.5 = 19:30hs).
+        // - El Domingo (0) está en 0.0 para que salte directamente al Lunes.
+        
+        const HORARIOS = {
+            1: 16.0, // LUNES
+            2: 18.0, // MARTES
+            3: 16.0, // MIERCOLES
+            4: 16.0, // JUEVES
+            5: 18.0, // VIERNES
+            6: 19.5, // SABADO
+            0: 0.0   // DOMINGO (Cerrado)
+        };
+        // =======================================================================
+
         document.addEventListener("DOMContentLoaded", function() {
-            const horariosCorte = { 0: 12.0, 1: 16.0, 2: 18.0, 3: 16.0, 4: 16.0, 5: 18.0, 6: 19.5 };
             const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
 
             function formatearHora(horaDecimal) {
@@ -202,15 +138,8 @@
                 const el = document.getElementById(elementId);
                 const currentTop = el.querySelector('.top').innerText;
                 if (currentTop !== String(newValue)) {
-                    el.innerHTML = `
-                        <div class="top">${newValue}</div>
-                        <div class="bottom">${currentTop}</div>
-                        <div class="flap top-flap">${currentTop}</div>
-                        <div class="flap bottom-flap">${newValue}</div>
-                    `;
-                    setTimeout(() => {
-                        el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`;
-                    }, 500);
+                    el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${currentTop}</div><div class="flap top-flap">${currentTop}</div><div class="flap bottom-flap">${newValue}</div>`;
+                    setTimeout(() => { el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`; }, 500);
                 }
             }
 
@@ -225,21 +154,25 @@
                 const diaActual = ahora.getDay();
                 const horaActualDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
                 
-                let targetDate = new Date();
-                let esParaManana = false;
-                let diaObjetivoIdx = diaActual;
-                let horaCorteDecimal = horariosCorte[diaActual];
+                let diaObjetivo = diaActual;
+                let diasSumados = 0;
 
-                if (horaActualDecimal >= horaCorteDecimal) {
-                    esParaManana = true;
-                    diaObjetivoIdx = (diaActual + 1) % 7;
-                    horaCorteDecimal = horariosCorte[diaObjetivoIdx];
-                    targetDate.setDate(targetDate.getDate() + 1);
+                // Si ya pasamos el corte de hoy, o si es domingo
+                if (horaActualDecimal >= HORARIOS[diaActual] || diaActual === 0) {
+                    diasSumados = 1;
+                    diaObjetivo = (diaActual + 1) % 7;
+                    
+                    // Si al sumar un día caemos en domingo, sumamos otro más para ir al lunes
+                    if (diaObjetivo === 0) {
+                        diasSumados = 2;
+                        diaObjetivo = 1; // Lunes
+                    }
                 }
 
-                let horasTarget = Math.floor(horaCorteDecimal);
-                let minsTarget = Math.round((horaCorteDecimal % 1) * 60);
-                targetDate.setHours(horasTarget, minsTarget, 0, 0);
+                let horaCorteObjetivo = HORARIOS[diaObjetivo];
+                let targetDate = new Date();
+                targetDate.setDate(ahora.getDate() + diasSumados);
+                targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
 
                 const diff = targetDate - ahora;
 
@@ -252,11 +185,16 @@
                     actualizarDigitos('t-m-', minutos);
                     actualizarDigitos('t-s-', segundos);
 
-                    document.getElementById('nb-day').innerText = esParaManana ? "MAÑANA" : "HOY";
-                    document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivoIdx];
+                    // Lógica del texto destacado (HOY / MAÑANA / EL LUNES)
+                    let textoBadge = "HOY";
+                    if (diasSumados === 1) textoBadge = "MAÑANA";
+                    if (diasSumados === 2) textoBadge = "EL LUNES";
                     
-                    let horaInicio = formatearHora(horaCorteDecimal);
-                    let horaFin = formatearHora(horaCorteDecimal + 2);
+                    document.getElementById('nb-day').innerText = textoBadge;
+                    document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
+                    
+                    let horaInicio = formatearHora(horaCorteObjetivo);
+                    let horaFin = formatearHora(horaCorteObjetivo + 2);
                     document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
                 }
             }
