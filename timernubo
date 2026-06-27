@@ -1,0 +1,92 @@
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. CREAMOS EL CONTENEDOR DESDE JAVASCRIPT PARA ESQUIVAR EL FILTRO HTML
+    const timerDiv = document.createElement('div');
+    timerDiv.style.cssText = 'background-color:#141414;color:#fff;text-align:center;padding:25px 10px;font-family:sans-serif;display:flex;flex-direction:column;align-items:center;width:100%;box-sizing:border-box;border-top:1px solid #333;';
+    
+    timerDiv.innerHTML = `
+        <div style="font-size:18px;font-weight:bold;margin-bottom:12px;letter-spacing:0.5px;">
+            Envío en el dia 🚀 ➝ Recibilo <span id="nb-day" style="text-shadow:2px 0 0 rgba(255,0,0,0.5),-2px 0 0 rgba(0,255,255,0.5);">HOY</span>
+        </div>
+        <div style="font-size:13px;margin-bottom:20px;color:#e0e0e0;text-transform:uppercase;">
+            RECIBI TU PEDIDO ENTRE LAS <span id="nb-win">00:00 y 00:00HS</span> DEL <span id="nb-tgt">DIA</span> SI PEDIS ANTES DE:
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <div style="display:flex;gap:3px;">
+                    <span id="h1" style="background:#4a90e2;color:#000;font-size:32px;font-weight:bold;padding:6px 10px;border-radius:4px;min-width:22px;text-align:center;">0</span>
+                    <span id="h2" style="background:#4a90e2;color:#000;font-size:32px;font-weight:bold;padding:6px 10px;border-radius:4px;min-width:22px;text-align:center;">0</span>
+                </div>
+                <span style="color:#4a90e2;font-size:12px;margin-top:6px;">Horas</span>
+            </div>
+            <div style="font-size:28px;font-weight:bold;color:#4a90e2;margin-top:8px;">:</div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <div style="display:flex;gap:3px;">
+                    <span id="m1" style="background:#4a90e2;color:#000;font-size:32px;font-weight:bold;padding:6px 10px;border-radius:4px;min-width:22px;text-align:center;">0</span>
+                    <span id="m2" style="background:#4a90e2;color:#000;font-size:32px;font-weight:bold;padding:6px 10px;border-radius:4px;min-width:22px;text-align:center;">0</span>
+                </div>
+                <span style="color:#4a90e2;font-size:12px;margin-top:6px;">Minutos</span>
+            </div>
+            <div style="font-size:28px;font-weight:bold;color:#4a90e2;margin-top:8px;">:</div>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <div style="display:flex;gap:3px;">
+                    <span id="s1" style="background:#4a90e2;color:#000;font-size:32px;font-weight:bold;padding:6px 10px;border-radius:4px;min-width:22px;text-align:center;">0</span>
+                    <span id="s2" style="background:#4a90e2;color:#000;font-size:32px;font-weight:bold;padding:6px 10px;border-radius:4px;min-width:22px;text-align:center;">0</span>
+                </div>
+                <span style="color:#4a90e2;font-size:12px;margin-top:6px;">Segundos</span>
+            </div>
+        </div>
+    `;
+    
+    // Lo inyectamos al final de la página (o cambialo para inyectarlo donde prefieras)
+    document.body.appendChild(timerDiv);
+
+    // 2. LÓGICA DE HORARIOS Y CONTADOR
+    const cortes = {0:12, 1:16, 2:18, 3:16, 4:16, 5:18, 6:19.5};
+    const dias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
+
+    function formHora(hd) {
+        return String(Math.floor(hd)).padStart(2,'0') + ":" + String(Math.round((hd%1)*60)).padStart(2,'0');
+    }
+
+    function actNum(id, val) {
+        let str = String(val).padStart(2,'0');
+        document.getElementById(id+'1').innerText = str[0];
+        document.getElementById(id+'2').innerText = str[1];
+    }
+
+    function runTimer() {
+        const now = new Date();
+        const dAct = now.getDay();
+        const hAct = now.getHours() + (now.getMinutes()/60);
+        
+        let dObj = dAct;
+        let hCort = cortes[dAct];
+        let paraManana = false;
+        let target = new Date();
+
+        if (hAct >= hCort) {
+            paraManana = true;
+            dObj = (dAct + 1) % 7;
+            hCort = cortes[dObj];
+            target.setDate(target.getDate() + 1);
+        }
+
+        target.setHours(Math.floor(hCort), Math.round((hCort%1)*60), 0, 0);
+        let diff = target - now;
+
+        if (diff > 0) {
+            actNum('h', Math.floor((diff % (1000*60*60*24)) / (1000*60*60)));
+            actNum('m', Math.floor((diff % (1000*60*60)) / (1000*60)));
+            actNum('s', Math.floor((diff % (1000*60)) / 1000));
+            
+            document.getElementById('nb-day').innerText = paraManana ? "MAÑANA" : "HOY";
+            document.getElementById('nb-tgt').innerText = dias[dObj];
+            document.getElementById('nb-win').innerText = formHora(hCort) + " y " + formHora(hCort+2) + "HS";
+        }
+    }
+
+    runTimer();
+    setInterval(runTimer, 1000);
+});
+</script>
