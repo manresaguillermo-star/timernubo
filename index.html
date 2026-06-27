@@ -1,203 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer de Envíos</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #111111;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; 
-            height: auto;
-            overflow: hidden;
-        }
+document.addEventListener("DOMContentLoaded", function() {
+    const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
 
-        .timer-container {
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            padding-top: 12px; /* Margen superior reducido */
-            padding-bottom: 8px; /* Margen inferior reducido */
-        }
+    // 1. Apuntamos al archivo crudo de GitHub y le sumamos el timestamp para aniquilar la caché
+    const urlHorarios = 'https://raw.githubusercontent.com/manresaguillermo-star/timernubo/main/horarios.json?t=' + Date.now();
 
-        .titulo {
-            font-size: 10.5px; /* Título reducido */
-            font-weight: 600;
-            margin-bottom: 3px;
-            letter-spacing: 0.2px;
-        }
-
-        .subtitulo {
-            font-size: 8px; /* Subtítulo reducido */
-            margin-bottom: 8px;
-            color: #b0b0b0;
-            text-transform: uppercase;
-            letter-spacing: 0.2px;
-            line-height: 1.2;
-        }
-
-        .countdown-wrapper {
-            display: flex;
-            gap: 4px;
-            justify-content: center;
-            align-items: flex-start;
-            margin-bottom: 5px;
-        }
-
-        .bloque-tiempo { display: flex; flex-direction: column; align-items: center; }
-        .digitos-container { display: flex; gap: 2px; }
-
-        /* ESTILOS DEL FLIP CLOCK ACHICADOS */
-        .digit {
-            position: relative; width: 15px; height: 20px;
-            background-color: #4a90e2; border-radius: 3px;
-            font-size: 14px; font-weight: bold; color: #000;
-            text-align: center; perspective: 250px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        .digit::after {
-            content: ""; position: absolute; top: 50%; left: 0;
-            width: 100%; height: 1px; background-color: rgba(0, 0, 0, 0.4); z-index: 5;
-        }
-        .digit .top, .digit .bottom, .digit .flap {
-            position: absolute; left: 0; width: 100%; height: 50%;
-            overflow: hidden; background-color: #4a90e2;
-        }
-        .digit .top { top: 0; transform-origin: bottom; line-height: 20px; border-radius: 3px 3px 0 0; }
-        .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 3px 3px; }
-        .digit .flap { backface-visibility: hidden; }
-        .digit .top-flap {
-            top: 0; transform-origin: bottom; line-height: 20px; z-index: 2;
-            animation: flipTop 0.25s ease-in forwards; border-radius: 3px 3px 0 0;
-        }
-        .digit .bottom-flap {
-            bottom: 0; transform-origin: top; line-height: 0; z-index: 1;
-            transform: rotateX(90deg); animation: flipBottom 0.25s ease-out 0.25s forwards; border-radius: 0 0 3px 3px;
-        }
-
-        @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
-        @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
-
-        .etiqueta { color: #4a90e2; font-size: 7px; margin-top: 3px; }
-        .separador { font-size: 14px; font-weight: bold; color: #4a90e2; margin-top: 1px; }
-    </style>
-</head>
-<body>
-
-    <div class="timer-container">
-        <div class="titulo">
-            Envío en el dia 🚀 ➝ Recibilo <span id="nb-day" style="font-weight: bold;">HOY</span>
-        </div>
-
-        <div class="subtitulo">
-            RECIBI TU PEDIDO ENTRE LAS <span id="nb-win">00:00 y 00:00HS</span> DEL <span id="nb-tgt">DIA</span> SI PEDIS ANTES DE:
-        </div>
-        
-        <div class="countdown-wrapper">
-            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Horas</span></div><div class="separador">:</div>
-            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Minutos</span></div><div class="separador">:</div>
-            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-s-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-s-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Segundos</span></div>
-        </div>
-    </div>
-
-    <script>
-        // =====================================================================================================================================================================================================================
-        // ⚙️ PANEL DE HORARIOS - CAMBIAR AQUI ⚙️
-        // =====================================================================================================================================================================================================================
-        // =====================================================================================================================================================================================================================
-        // =====================================================================================================================================================================================================================
-        const HORARIOS = {
-            1: 16.0, // LUNES
-            2: 18.0, // MARTES
-            3: 16.0, // MIERCOLES
-            4: 16.0, // JUEVES
-            5: 18.0, // VIERNES
-            6: 19.5, // SABADO
-            0: 0.0   // DOMINGO (Cerrado)
-        };
-        // =====================================================================================================================================================================================================================
-        // =====================================================================================================================================================================================================================
-        // =====================================================================================================================================================================================================================
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
-
+    fetch(urlHorarios)
+        .then(response => response.json())
+        .then(HORARIOS => {
+            
+            // =======================================================
+            // ACÁ ADENTRO PEGÁS EXACTAMENTE TODO EL RESTO DE TU CÓDIGO 
+            // =======================================================
+            
             function formatearHora(horaDecimal) {
                 let h = Math.floor(horaDecimal);
                 let m = Math.round((horaDecimal % 1) * 60);
                 return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
             }
 
-            function actualizarFlip(elementId, newValue) {
-                const el = document.getElementById(elementId);
-                const currentTop = el.querySelector('.top').innerText;
-                if (currentTop !== String(newValue)) {
-                    el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${currentTop}</div><div class="flap top-flap">${currentTop}</div><div class="flap bottom-flap">${newValue}</div>`;
-                    setTimeout(() => { el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`; }, 500);
-                }
-            }
-
-            function actualizarDigitos(idPrefix, valor) {
-                let str = String(valor).padStart(2, '0');
-                actualizarFlip(idPrefix + '1', str[0]);
-                actualizarFlip(idPrefix + '2', str[1]);
-            }
-
-            function actualizarTimer() {
-                const ahora = new Date();
-                const diaActual = ahora.getDay();
-                const horaActualDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
-                
-                let diaObjetivo = diaActual;
-                let diasSumados = 0;
-
-                if (horaActualDecimal >= HORARIOS[diaActual] || diaActual === 0) {
-                    diasSumados = 1;
-                    diaObjetivo = (diaActual + 1) % 7;
-                    if (diaObjetivo === 0) {
-                        diasSumados = 2;
-                        diaObjetivo = 1; 
-                    }
-                }
-
-                let horaCorteObjetivo = HORARIOS[diaObjetivo];
-                let targetDate = new Date();
-                targetDate.setDate(ahora.getDate() + diasSumados);
-                targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
-
-                const diff = targetDate - ahora;
-
-                if (diff > 0) {
-                    const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const segundos = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    actualizarDigitos('t-h-', horas);
-                    actualizarDigitos('t-m-', minutos);
-                    actualizarDigitos('t-s-', segundos);
-
-                    let textoBadge = "HOY";
-                    if (diasSumados === 1) textoBadge = "MAÑANA";
-                    if (diasSumados === 2) textoBadge = "EL LUNES";
-                    
-                    document.getElementById('nb-day').innerText = textoBadge;
-                    document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
-                    
-                    let horaInicio = formatearHora(horaCorteObjetivo);
-                    let horaFin = formatearHora(horaCorteObjetivo + 2);
-                    document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
-                }
-            }
+            // ... (Tus funciones actualizarFlip, actualizarDigitos, actualizarTimer) ...
 
             actualizarTimer();
             setInterval(actualizarTimer, 1000);
+
+        })
+        .catch(error => {
+            console.error("Error cargando el cronograma logístico:", error);
         });
-    </script>
-</body>
-</html>
+});
