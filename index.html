@@ -111,7 +111,7 @@
                         const diff = targetDate - ahora;
 
                         if (diff > 0) {
-                            const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const horas = Math.floor(diff / (1000 * 60 * 60));
                             const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                             const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
