@@ -23,7 +23,7 @@
 
         .timer-container {
             text-align: center; width: 100%; max-width: 400px;
-            padding-top: 8px; padding-bottom: 4px; /* Reducido para centrar verticalmente */
+            padding-top: 8px; padding-bottom: 4px;
             box-sizing: border-box;
         }
         
@@ -63,7 +63,6 @@
         .bloque-tiempo { display: flex; flex-direction: column; align-items: center; }
         .digitos-container { display: flex; gap: 2px; }
 
-        /* Ajuste de tamaño compacto para que entre impecable en el alto del iframe */
         .digit {
             position: relative; width: 14px; height: 19px; background-color: #3598db; border-radius: 3px;
             font-size: 13px; font-weight: 800; color: #000000; text-align: center; perspective: 250px; 
@@ -86,7 +85,6 @@
         @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
         @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
         
-        /* Reducido el tamaño y el margen superior para que no se escape por abajo */
         .etiqueta { color: #3598db; font-size: 6.5px; margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1px; }
         
         .separador { 
@@ -96,6 +94,25 @@
         @keyframes nuboBlink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
+        }
+
+        /* 📱 BLINDAJE PARA PANTALLAS ULTRA FINAS (CELULARES DE MENOS DE 360px DE ANCHO) */
+        @media (max-width: 360px) {
+            .titulo { font-size: 9.5px; }
+            .subtitulo { font-size: 7.5px; margin-bottom: 4px; }
+            #nb-day { font-size: 8.5px; padding: 1px 4px; }
+            .countdown-wrapper { gap: 4px; }
+            
+            /* Reducimos un pelito los números para ganar ancho */
+            .digit { width: 13px; height: 18px; font-size: 12px; }
+            .digit .top { line-height: 18px; }
+            .digit .top-flap { line-height: 18px; }
+            
+            /* Truco técnico: Ocultamos el texto largo y metemos abreviaciones limpias en CSS */
+            .etiqueta { font-size: 0px !important; margin-top: 1px; }
+            .bloque-tiempo:nth-child(1) .etiqueta::after { content: "Hs" !important; font-size: 6.5px !important; }
+            .bloque-tiempo:nth-child(3) .etiqueta::after { content: "Min" !important; font-size: 6.5px !important; }
+            .bloque-tiempo:nth-child(5) .etiqueta::after { content: "Seg" !important; font-size: 6.5px !important; }
         }
     </style>
 </head>
