@@ -87,7 +87,6 @@
         
         .etiqueta { color: #3598db; font-size: 6.5px; margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1px; }
         
-        /* Clases de soporte para evitar selectores nth-child conflictivos */
         .txt-largo { display: inline; }
         .txt-corto { display: none; }
 
@@ -111,7 +110,6 @@
             .digit .top-flap { line-height: 18px; }
             .etiqueta { font-size: 6.5px; margin-top: 1px; }
             
-            /* Cambia el texto de forma segura sin romper el deploy */
             .txt-largo { display: none !important; }
             .txt-corto { display: inline !important; }
         }
@@ -201,7 +199,7 @@
 
                         if (diff > 0) {
                             const horas = Math.floor(diff / (1000 * 60 * 60));
-                            .const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                             const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
                             actualizarDigitos('t-h-', horas);
