@@ -7,12 +7,11 @@
     <style>
         body {
             margin: 0; padding: 0; 
-            background-color: #0b0b0b; /* Un tono más profundo para resaltar el neón */
+            background-color: #0b0b0b; 
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; justify-content: center; align-items: flex-start; 
             height: auto; overflow: hidden;
-            /* Línea de neón superior con respiración pulsante */
             border-top: 1.5px solid #3598db;
             box-shadow: 0 -8px 25px rgba(53, 152, 219, 0.15);
             animation: nuboGlow 3s infinite ease-in-out;
@@ -24,76 +23,74 @@
 
         .timer-container {
             text-align: center; width: 100%; max-width: 400px;
-            padding-top: 14px; padding-bottom: 10px;
+            padding-top: 8px; padding-bottom: 4px; /* Reducido para centrar verticalmente */
             box-sizing: border-box;
         }
         
-        /* Modificado para albergar el nuevo badge */
         .titulo { 
-            font-size: 11px; 
+            font-size: 10.5px; 
             font-weight: 700; 
-            margin-bottom: 5px; 
-            letter-spacing: 0.3px; 
+            margin-bottom: 3px; 
+            letter-spacing: 0.2px; 
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
         }
 
-        /* Badge llamativo para obligar la lectura del día */
         #nb-day {
             background-color: #3598db;
             color: #000000;
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 900;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             display: inline-block;
             box-shadow: 0 2px 6px rgba(53, 152, 219, 0.3);
         }
 
         .subtitulo {
-            font-size: 8px; margin-bottom: 10px; color: #a5a5a5; text-transform: uppercase;
-            letter-spacing: 0.3px; line-height: 1.3; font-weight: 500;
+            font-size: 8px; margin-bottom: 6px; color: #a5a5a5; text-transform: uppercase;
+            letter-spacing: 0.2px; line-height: 1.2; font-weight: 500;
         }
         #nb-win, #nb-tgt {
             color: #ffffff;
             font-weight: 700;
         }
 
-        .countdown-wrapper { display: flex; gap: 5px; justify-content: center; align-items: flex-start; margin-bottom: 3px; }
+        .countdown-wrapper { display: flex; gap: 5px; justify-content: center; align-items: flex-start; margin-bottom: 2px; }
         .bloque-tiempo { display: flex; flex-direction: column; align-items: center; }
         .digitos-container { display: flex; gap: 2px; }
 
-        /* Estilización premium de los casilleros de hora (Celeste Nubo) */
+        /* Ajuste de tamaño compacto para que entre impecable en el alto del iframe */
         .digit {
-            position: relative; width: 16px; height: 22px; background-color: #3598db; border-radius: 4px;
-            font-size: 15px; font-weight: 800; color: #000000; text-align: center; perspective: 250px; 
+            position: relative; width: 14px; height: 19px; background-color: #3598db; border-radius: 3px;
+            font-size: 13px; font-weight: 800; color: #000000; text-align: center; perspective: 250px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
         .digit::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background-color: rgba(0, 0, 0, 0.25); z-index: 5; }
         .digit .top, .digit .bottom, .digit .flap { position: absolute; left: 0; width: 100%; height: 50%; overflow: hidden; background-color: #3598db; }
-        .digit .top { top: 0; transform-origin: bottom; line-height: 22px; border-radius: 4px 4px 0 0; }
-        .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 4px 4px; }
+        .digit .top { top: 0; transform-origin: bottom; line-height: 19px; border-radius: 3px 3px 0 0; }
+        .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 3px 3px; }
         .digit .flap { backface-visibility: hidden; }
         .digit .top-flap {
-            top: 0; transform-origin: bottom; line-height: 22px; z-index: 2;
-            animation: flipTop 0.25s ease-in forwards; border-radius: 4px 4px 0 0;
+            top: 0; transform-origin: bottom; line-height: 19px; z-index: 2;
+            animation: flipTop 0.25s ease-in forwards; border-radius: 3px 3px 0 0;
         }
         .digit .bottom-flap {
             bottom: 0; transform-origin: top; line-height: 0; z-index: 1;
-            transform: rotateX(90deg); animation: flipBottom 0.25s ease-out 0.25s forwards; border-radius: 0 0 4px 4px;
+            transform: rotateX(90deg); animation: flipBottom 0.25s ease-out 0.25s forwards; border-radius: 0 0 3px 3px;
         }
 
         @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
         @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
         
-        .etiqueta { color: #3598db; font-size: 7px; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1px; }
+        /* Reducido el tamaño y el margen superior para que no se escape por abajo */
+        .etiqueta { color: #3598db; font-size: 6.5px; margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1px; }
         
-        /* Animación parpadeante en los dos puntos separadores */
         .separador { 
-            font-size: 15px; font-weight: bold; color: #3598db; margin-top: 1px; 
+            font-size: 13px; font-weight: bold; color: #3598db; margin-top: 0px; 
             animation: nuboBlink 1s infinite steps(1, start);
         }
         @keyframes nuboBlink {
