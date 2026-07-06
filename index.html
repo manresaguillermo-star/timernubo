@@ -3,55 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer de Envíos</title>
+    <title>Timer de Envíos Nubo</title>
     <style>
         body {
-            margin: 0; padding: 0; background-color: #111111; color: #ffffff;
+            margin: 0; padding: 0; 
+            background-color: #0b0b0b; /* Un tono más profundo para resaltar el neón */
+            color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex; justify-content: center; align-items: flex-start; 
             height: auto; overflow: hidden;
+            /* Línea de neón superior con respiración pulsante */
+            border-top: 1.5px solid #3598db;
+            box-shadow: 0 -8px 25px rgba(53, 152, 219, 0.15);
+            animation: nuboGlow 3s infinite ease-in-out;
         }
+        @keyframes nuboGlow {
+            0%, 100% { box-shadow: 0 -5px 20px rgba(53, 152, 219, 0.12); border-color: #2980b9; }
+            50% { box-shadow: 0 -8px 30px rgba(53, 152, 219, 0.25); border-color: #3598db; }
+        }
+
         .timer-container {
             text-align: center; width: 100%; max-width: 400px;
-            padding-top: 12px; padding-bottom: 8px;
+            padding-top: 14px; padding-bottom: 10px;
+            box-sizing: border-box;
         }
-        .titulo { font-size: 10.5px; font-weight: 600; margin-bottom: 3px; letter-spacing: 0.2px; }
+        
+        /* Modificado para albergar el nuevo badge */
+        .titulo { 
+            font-size: 11px; 
+            font-weight: 700; 
+            margin-bottom: 5px; 
+            letter-spacing: 0.3px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* Badge llamativo para obligar la lectura del día */
+        #nb-day {
+            background-color: #3598db;
+            color: #000000;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            box-shadow: 0 2px 6px rgba(53, 152, 219, 0.3);
+        }
+
         .subtitulo {
-            font-size: 8px; margin-bottom: 8px; color: #b0b0b0; text-transform: uppercase;
-            letter-spacing: 0.2px; line-height: 1.2;
+            font-size: 8px; margin-bottom: 10px; color: #a5a5a5; text-transform: uppercase;
+            letter-spacing: 0.3px; line-height: 1.3; font-weight: 500;
         }
-        .countdown-wrapper { display: flex; gap: 4px; justify-content: center; align-items: flex-start; margin-bottom: 5px; }
+        #nb-win, #nb-tgt {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .countdown-wrapper { display: flex; gap: 5px; justify-content: center; align-items: flex-start; margin-bottom: 3px; }
         .bloque-tiempo { display: flex; flex-direction: column; align-items: center; }
         .digitos-container { display: flex; gap: 2px; }
 
+        /* Estilización premium de los casilleros de hora (Celeste Nubo) */
         .digit {
-            position: relative; width: 15px; height: 20px; background-color: #4a90e2; border-radius: 3px;
-            font-size: 14px; font-weight: bold; color: #000; text-align: center; perspective: 250px; box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            position: relative; width: 16px; height: 22px; background-color: #3598db; border-radius: 4px;
+            font-size: 15px; font-weight: 800; color: #000000; text-align: center; perspective: 250px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
-        .digit::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background-color: rgba(0, 0, 0, 0.4); z-index: 5; }
-        .digit .top, .digit .bottom, .digit .flap { position: absolute; left: 0; width: 100%; height: 50%; overflow: hidden; background-color: #4a90e2; }
-        .digit .top { top: 0; transform-origin: bottom; line-height: 20px; border-radius: 3px 3px 0 0; }
-        .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 3px 3px; }
+        .digit::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background-color: rgba(0, 0, 0, 0.25); z-index: 5; }
+        .digit .top, .digit .bottom, .digit .flap { position: absolute; left: 0; width: 100%; height: 50%; overflow: hidden; background-color: #3598db; }
+        .digit .top { top: 0; transform-origin: bottom; line-height: 22px; border-radius: 4px 4px 0 0; }
+        .digit .bottom { bottom: 0; transform-origin: top; line-height: 0; border-radius: 0 0 4px 4px; }
         .digit .flap { backface-visibility: hidden; }
         .digit .top-flap {
-            top: 0; transform-origin: bottom; line-height: 20px; z-index: 2;
-            animation: flipTop 0.25s ease-in forwards; border-radius: 3px 3px 0 0;
+            top: 0; transform-origin: bottom; line-height: 22px; z-index: 2;
+            animation: flipTop 0.25s ease-in forwards; border-radius: 4px 4px 0 0;
         }
         .digit .bottom-flap {
             bottom: 0; transform-origin: top; line-height: 0; z-index: 1;
-            transform: rotateX(90deg); animation: flipBottom 0.25s ease-out 0.25s forwards; border-radius: 0 0 3px 3px;
+            transform: rotateX(90deg); animation: flipBottom 0.25s ease-out 0.25s forwards; border-radius: 0 0 4px 4px;
         }
 
         @keyframes flipTop { 100% { transform: rotateX(-90deg); } }
         @keyframes flipBottom { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
-        .etiqueta { color: #4a90e2; font-size: 7px; margin-top: 3px; }
-        .separador { font-size: 14px; font-weight: bold; color: #4a90e2; margin-top: 1px; }
+        
+        .etiqueta { color: #3598db; font-size: 7px; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1px; }
+        
+        /* Animación parpadeante en los dos puntos separadores */
+        .separador { 
+            font-size: 15px; font-weight: bold; color: #3598db; margin-top: 1px; 
+            animation: nuboBlink 1s infinite steps(1, start);
+        }
+        @keyframes nuboBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
     </style>
 </head>
 <body>
     <div class="timer-container">
-        <div class="titulo">Envío en el dia 🚀 ➝ Recibilo <span id="nb-day" style="font-weight: bold;">HOY</span></div>
-        <div class="subtitulo">ELIGIENDO ENVIO LO RECIBIS ENTRE LAS <span id="nb-win">00:00 y 00:00HS</span> DEL <span id="nb-tgt">DIA</span> SI PEDIS ANTES DE:</div>
+        <!-- El JS va a inyectar el texto dentro del Span que ahora es un Badge destacado -->
+        <div class="titulo">Envío en el día 🚀 ➝ Recibilo <span id="nb-day">HOY</span></div>
+        <div class="subtitulo">Eligiendo envío lo recibís entre las <span id="nb-win">00:00 y 00:00HS</span> del <span id="nb-tgt">DIA</span> si pedís antes de:</div>
         <div class="countdown-wrapper">
             <div class="bloque-tiempo"><div class="digitos-container"><div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Horas</span></div><div class="separador">:</div>
             <div class="bloque-tiempo"><div class="digitos-container"><div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Minutos</span></div><div class="separador">:</div>
