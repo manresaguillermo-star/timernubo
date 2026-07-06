@@ -87,6 +87,10 @@
         
         .etiqueta { color: #3598db; font-size: 6.5px; margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1px; }
         
+        /* Clases de soporte para evitar selectores nth-child conflictivos */
+        .txt-largo { display: inline; }
+        .txt-corto { display: none; }
+
         .separador { 
             font-size: 13px; font-weight: bold; color: #3598db; margin-top: 0px; 
             animation: nuboBlink 1s infinite steps(1, start);
@@ -96,35 +100,51 @@
             50% { opacity: 0.3; }
         }
 
-        /* 📱 BLINDAJE PARA PANTALLAS ULTRA FINAS (CELULARES DE MENOS DE 360px DE ANCHO) */
+        /* 📱 COMPRESIÓN PARA CELULARES FINOS */
         @media (max-width: 360px) {
             .titulo { font-size: 9.5px; }
             .subtitulo { font-size: 7.5px; margin-bottom: 4px; }
             #nb-day { font-size: 8.5px; padding: 1px 4px; }
             .countdown-wrapper { gap: 4px; }
-            
-            /* Reducimos un pelito los números para ganar ancho */
             .digit { width: 13px; height: 18px; font-size: 12px; }
             .digit .top { line-height: 18px; }
             .digit .top-flap { line-height: 18px; }
+            .etiqueta { font-size: 6.5px; margin-top: 1px; }
             
-            /* Truco técnico: Ocultamos el texto largo y metemos abreviaciones limpias en CSS */
-            .etiqueta { font-size: 0px !important; margin-top: 1px; }
-            .bloque-tiempo:nth-child(1) .etiqueta::after { content: "Hs" !important; font-size: 6.5px !important; }
-            .bloque-tiempo:nth-child(3) .etiqueta::after { content: "Min" !important; font-size: 6.5px !important; }
-            .bloque-tiempo:nth-child(5) .etiqueta::after { content: "Seg" !important; font-size: 6.5px !important; }
+            /* Cambia el texto de forma segura sin romper el deploy */
+            .txt-largo { display: none !important; }
+            .txt-corto { display: inline !important; }
         }
     </style>
 </head>
 <body>
     <div class="timer-container">
-        <!-- El JS va a inyectar el texto dentro del Span que ahora es un Badge destacado -->
         <div class="titulo">Envío en el día 🚀 ➝ Recibilo <span id="nb-day">HOY</span></div>
         <div class="subtitulo">Eligiendo envío lo recibís entre las <span id="nb-win">00:00 y 00:00HS</span> del <span id="nb-tgt">DIA</span> si pedís antes de:</div>
         <div class="countdown-wrapper">
-            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Horas</span></div><div class="separador">:</div>
-            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Minutos</span></div><div class="separador">:</div>
-            <div class="bloque-tiempo"><div class="digitos-container"><div id="t-s-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div><div id="t-s-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div></div><span class="etiqueta">Segundos</span></div>
+            <div class="bloque-tiempo">
+                <div class="digitos-container">
+                    <div id="t-h-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                    <div id="t-h-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                </div>
+                <span class="etiqueta"><span class="txt-largo">Horas</span><span class="txt-corto">Hs</span></span>
+            </div>
+            <div class="separador">:</div>
+            <div class="bloque-tiempo">
+                <div class="digitos-container">
+                    <div id="t-m-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                    <div id="t-m-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                </div>
+                <span class="etiqueta"><span class="txt-largo">Minutos</span><span class="txt-corto">Min</span></span>
+            </div>
+            <div class="separador">:</div>
+            <div class="bloque-tiempo">
+                <div class="digitos-container">
+                    <div id="t-s-1" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                    <div id="t-s-2" class="digit"><div class="top">0</div><div class="bottom">0</div></div>
+                </div>
+                <span class="etiqueta"><span class="txt-largo">Segundos</span><span class="txt-corto">Seg</span></span>
+            </div>
         </div>
     </div>
 
@@ -181,7 +201,7 @@
 
                         if (diff > 0) {
                             const horas = Math.floor(diff / (1000 * 60 * 60));
-                            const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            .const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                             const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
                             actualizarDigitos('t-h-', horas);
