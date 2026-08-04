@@ -99,7 +99,6 @@
             50% { opacity: 0.3; }
         }
 
-        /* 📱 COMPRESIÓN PARA CELULARES FINOS */
         @media (max-width: 360px) {
             .titulo { font-size: 9.5px; }
             .subtitulo { font-size: 7.5px; margin-bottom: 4px; }
@@ -184,19 +183,24 @@
                         let diaObjetivo = diaActual;
                         let diasSumados = 0;
 
-                        // Si ya pasó el horario de hoy, o si el día de hoy tiene envíos desactivados (0.0)
-                        if (horaActualDecimal >= HORARIOS[diaActual] || HORARIOS[diaActual] === 0) {
+                        // Forzamos que el valor de hoy se lea sí o sí como número matemático
+                        let limiteHoy = parseFloat(HORARIOS[diaActual]);
+
+                        // 1. ¿Ya pasó el horario de hoy o el día de hoy tiene envíos desactivados (0)?
+                        if (horaActualDecimal >= limiteHoy || limiteHoy === 0) {
                             diasSumados = 1;
                             diaObjetivo = (diaActual + 1) % 7;
                             
-                            // Bucle: Sigue saltando días si el próximo día objetivo también tiene envíos desactivados (0.0)
-                            while (HORARIOS[diaObjetivo] === 0) {
+                            // 2. Bucle: Si el día objetivo de mañana o pasado también está en 0, seguimos saltando días
+                            while (parseFloat(HORARIOS[diaObjetivo]) === 0) {
                                 diasSumados++;
                                 diaObjetivo = (diaObjetivo + 1) % 7;
                             }
                         }
 
-                        let horaCorteObjetivo = HORARIOS[diaObjetivo];
+                        // Forzamos el objetivo a número para evitar que la suma encole textos
+                        let horaCorteObjetivo = parseFloat(HORARIOS[diaObjetivo]);
+                        
                         let targetDate = new Date();
                         targetDate.setDate(ahora.getDate() + diasSumados);
                         targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
@@ -214,7 +218,7 @@
 
                             let textoBadge = "HOY";
                             if (diasSumados === 1) textoBadge = "MAÑANA";
-                            if (diasSumados >= 2) textoBadge = "EL " + nombresDias[diaObjetivo]; // Se volvió dinámico
+                            if (diasSumados >= 2) textoBadge = "EL " + nombresDias[diaObjetivo];
                             
                             document.getElementById('nb-day').innerText = textoBadge;
                             document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
