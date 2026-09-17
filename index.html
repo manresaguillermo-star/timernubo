@@ -147,128 +147,102 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
-            const urlHorarios = 'https://manresaguillermo-star.github.io/timernubo/horarios.json?t=' + Date.now();
-            fetch(urlHorarios)
-                .then(response => response.json())
-                .then(HORARIOS => {
-                    function formatearHora(horaDecimal) {
-                        let h = Math.floor(horaDecimal);
-                        let m = Math.round((horaDecimal % 1) * 60);
-                        return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
-                    }
+    document.addEventListener("DOMContentLoaded", function() {
+        const nombresDias = ["DOMINGO", "LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
+        const urlHorarios = 'https://manresaguillermo-star.github.io/timernubo/horarios.json?t=' + Date.now();
+        
+        fetch(urlHorarios)
+            .then(response => response.json())
+            .then(HORARIOS => {
+                
+                function formatearHora(horaDecimal) {
+                    let h = Math.floor(horaDecimal);
+                    let m = Math.round((horaDecimal % 1) * 60);
+                    return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
+                }
 
-                    function actualizarFlip(elementId, newValue) {
-                        const el = document.getElementById(elementId);
-                        if (!el) return;
-                        const currentTop = el.querySelector('.top').innerText;
+                function actualizarFlip(elementId, newValue) {
+                    const el = document.getElementById(elementId);
+                    if (!el) return;
+                    const currentTop = el.querySelector('.top').innerText;
+                    
+                    if (currentTop !== String(newValue)) {
+                        el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${currentTop}</div><div class="flap top-flap">${currentTop}</div><div class="flap bottom-flap">${newValue}</div>`;
+                        setTimeout(() => { el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`; }, 500);
+                    }
+                }
+
+                function actualizarDigitos(idPrefix, valor) {
+                    let str = String(valor).padStart(2, '0');
+                    actualizarFlip(idPrefix + '1', str[0]);
+                    actualizarFlip(idPrefix + '2', str[1]);
+                }
+
+                function actualizarTimer() {
+                    const ahora = new Date();
+                    const diaActual = ahora.getDay();
+                    const horaActualDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
+                    
+                    let diaObjetivo = diaActual;
+                    let diasSumados = 0;
+
+                    let limiteHoy = parseFloat(HORARIOS[diaActual]);
+                    
+                    // Límite real = hora del JSON menos 20 minutos
+                    let limiteRealCorte = limiteHoy - (20 / 60);
+
+                    // Si ya pasamos el límite de hoy, o si hoy no hay envíos (limite = 0)
+                    if (horaActualDecimal >= limiteRealCorte || limiteHoy === 0) {
+                        diasSumados = 1;
+                        diaObjetivo = (diaActual + 1) % 7;
                         
-                        if (currentTop !== String(newValue)) {
-                            el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${currentTop}</div><div class="flap top-flap">${currentTop}</div><div class="flap bottom-flap">${newValue}</div>`;
-                            setTimeout(() => { el.innerHTML = `<div class="top">${newValue}</div><div class="bottom">${newValue}</div>`; }, 500);
+                        // Buscamos el próximo día hábil en el JSON
+                        while (parseFloat(HORARIOS[diaObjetivo]) === 0) {
+                            diasSumados++;
+                            diaObjetivo = (diaObjetivo + 1) % 7;
                         }
                     }
 
-                    function actualizarDigitos(idPrefix, valor) {
-                        let str = String(valor).padStart(2, '0');
-                        actualizarFlip(idPrefix + '1', str[0]);
-                        actualizarFlip(idPrefix + '2', str[1]);
-                    }
+                    let horaCorteObjetivo = parseFloat(HORARIOS[diaObjetivo]);
+                    
+                    let targetDate = new Date();
+                    targetDate.setDate(ahora.getDate() + diasSumados);
+                    targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
+                    
+                    // Restamos exactamente los 20 minutos a la cuenta regresiva visual
+                    targetDate.setMinutes(targetDate.getMinutes() - 20);
 
-                    function actualizarTimer() {
-    const ahora = new Date();
-    const diaActual = ahora.getDay();
-    const horaActualDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
-    
-    let diaObjetivo = diaActual;
-    let diasSumados = 0;
+                    const diff = targetDate - ahora;
 
-    let limiteHoy = parseFloat(HORARIOS[diaActual]);
-    
-    // NUEVO: Calculamos el límite real de toma de pedidos (20 minutos antes)
-    let limiteRealCorte = limiteHoy - (20 / 60);
+                    if (diff > 0) {
+                        const horas = Math.floor(diff / (1000 * 60 * 60));
+                        const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const segundos = Math.floor((diff % (1000 * 60)) / 1000);
 
-    // NUEVO: Evaluamos contra el límite real de corte en lugar del límite original
-    if (horaActualDecimal >= limiteRealCorte || limiteHoy === 0) {
-        diasSumados = 1;
-        diaObjetivo = (diaActual + 1) % 7;
-        
-        while (parseFloat(HORARIOS[diaObjetivo]) === 0) {
-            diasSumados++;
-            diaObjetivo = (diaObjetivo + 1) % 7;
-        }
-    }
+                        actualizarDigitos('t-h-', horas);
+                        actualizarDigitos('t-m-', minutos);
+                        actualizarDigitos('t-s-', segundos);
 
-    let horaCorteObjetivo = parseFloat(HORARIOS[diaObjetivo]);
-    
-    let targetDate = new Date();
-    targetDate.setDate(ahora.getDate() + diasSumados);
-    targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
-    
-    // NUEVO: Le restamos los 20 minutos de preparación al reloj de cuenta regresiva
-    targetDate.setMinutes(targetDate.getMinutes() - 20);
-
-    const diff = targetDate - ahora;
-
-    if (diff > 0) {
-        const horas = Math.floor(diff / (1000 * 60 * 60));
-        const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const segundos = Math.floor((diff % (1000 * 60)) / 1000);
-
-        actualizarDigitos('t-h-', horas);
-        actualizarDigitos('t-m-', minutos);
-        actualizarDigitos('t-s-', segundos);
-
-        let textoBadge = "HOY";
-        if (diasSumados === 1) textoBadge = "MAÑANA";
-        if (diasSumados >= 2) textoBadge = "EL " + nombresDias[diaObjetivo];
-        
-        document.getElementById('nb-day').innerText = textoBadge;
-        document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
-        
-        // MANTENIDO: Los textos visuales siguen usando la horaCorteObjetivo original
-        let horaInicio = formatearHora(horaCorteObjetivo);
-        let horaFin = formatearHora(horaCorteObjetivo + 3);
-        document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
-    }
-}
-
-                        // Forzamos el objetivo a número para evitar que la suma encole textos
-                        let horaCorteObjetivo = parseFloat(HORARIOS[diaObjetivo]);
+                        let textoBadge = "HOY";
+                        if (diasSumados === 1) textoBadge = "MAÑANA";
+                        if (diasSumados >= 2) textoBadge = "EL " + nombresDias[diaObjetivo];
                         
-                        let targetDate = new Date();
-                        targetDate.setDate(ahora.getDate() + diasSumados);
-                        targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
-
-                        const diff = targetDate - ahora;
-
-                        if (diff > 0) {
-                            const horas = Math.floor(diff / (1000 * 60 * 60));
-                            const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                            const segundos = Math.floor((diff % (1000 * 60)) / 1000);
-
-                            actualizarDigitos('t-h-', horas);
-                            actualizarDigitos('t-m-', minutos);
-                            actualizarDigitos('t-s-', segundos);
-
-                            let textoBadge = "HOY";
-                            if (diasSumados === 1) textoBadge = "MAÑANA";
-                            if (diasSumados >= 2) textoBadge = "EL " + nombresDias[diaObjetivo];
-                            
-                            document.getElementById('nb-day').innerText = textoBadge;
-                            document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
-                            
-                            let horaInicio = formatearHora(horaCorteObjetivo);
-                            let horaFin = formatearHora(horaCorteObjetivo + 3);
-                            document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
-                        }
+                        document.getElementById('nb-day').innerText = textoBadge;
+                        document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
+                        
+                        // Los textos visuales siguen tomando la hora del JSON original
+                        let horaInicio = formatearHora(horaCorteObjetivo);
+                        let horaFin = formatearHora(horaCorteObjetivo + 3);
+                        document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
                     }
-                    actualizarTimer();
-                    setInterval(actualizarTimer, 1000);
-                })
-                .catch(error => console.error("Error al cargar horarios.json:", error));
-        });
-    </script>
+                }
+                
+                // Estos dos comandos son vitales, si faltaban el reloj se quedaba en 00
+                actualizarTimer();
+                setInterval(actualizarTimer, 1000);
+            })
+            .catch(error => console.error("Error al cargar horarios.json:", error));
+    });
+</script>
 </body>
 </html>
