@@ -177,27 +177,62 @@
                     }
 
                     function actualizarTimer() {
-                        const ahora = new Date();
-                        const diaActual = ahora.getDay();
-                        const horaActualDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
-                        
-                        let diaObjetivo = diaActual;
-                        let diasSumados = 0;
+    const ahora = new Date();
+    const diaActual = ahora.getDay();
+    const horaActualDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
+    
+    let diaObjetivo = diaActual;
+    let diasSumados = 0;
 
-                        // Forzamos que el valor de hoy se lea sí o sí como número matemático
-                        let limiteHoy = parseFloat(HORARIOS[diaActual]);
+    let limiteHoy = parseFloat(HORARIOS[diaActual]);
+    
+    // NUEVO: Calculamos el límite real de toma de pedidos (20 minutos antes)
+    let limiteRealCorte = limiteHoy - (20 / 60);
 
-                        // 1. ¿Ya pasó el horario de hoy o el día de hoy tiene envíos desactivados (0)?
-                        if (horaActualDecimal >= limiteHoy || limiteHoy === 0) {
-                            diasSumados = 1;
-                            diaObjetivo = (diaActual + 1) % 7;
-                            
-                            // 2. Bucle: Si el día objetivo de mañana o pasado también está en 0, seguimos saltando días
-                            while (parseFloat(HORARIOS[diaObjetivo]) === 0) {
-                                diasSumados++;
-                                diaObjetivo = (diaObjetivo + 1) % 7;
-                            }
-                        }
+    // NUEVO: Evaluamos contra el límite real de corte en lugar del límite original
+    if (horaActualDecimal >= limiteRealCorte || limiteHoy === 0) {
+        diasSumados = 1;
+        diaObjetivo = (diaActual + 1) % 7;
+        
+        while (parseFloat(HORARIOS[diaObjetivo]) === 0) {
+            diasSumados++;
+            diaObjetivo = (diaObjetivo + 1) % 7;
+        }
+    }
+
+    let horaCorteObjetivo = parseFloat(HORARIOS[diaObjetivo]);
+    
+    let targetDate = new Date();
+    targetDate.setDate(ahora.getDate() + diasSumados);
+    targetDate.setHours(Math.floor(horaCorteObjetivo), Math.round((horaCorteObjetivo % 1) * 60), 0, 0);
+    
+    // NUEVO: Le restamos los 20 minutos de preparación al reloj de cuenta regresiva
+    targetDate.setMinutes(targetDate.getMinutes() - 20);
+
+    const diff = targetDate - ahora;
+
+    if (diff > 0) {
+        const horas = Math.floor(diff / (1000 * 60 * 60));
+        const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+
+        actualizarDigitos('t-h-', horas);
+        actualizarDigitos('t-m-', minutos);
+        actualizarDigitos('t-s-', segundos);
+
+        let textoBadge = "HOY";
+        if (diasSumados === 1) textoBadge = "MAÑANA";
+        if (diasSumados >= 2) textoBadge = "EL " + nombresDias[diaObjetivo];
+        
+        document.getElementById('nb-day').innerText = textoBadge;
+        document.getElementById('nb-tgt').innerText = nombresDias[diaObjetivo];
+        
+        // MANTENIDO: Los textos visuales siguen usando la horaCorteObjetivo original
+        let horaInicio = formatearHora(horaCorteObjetivo);
+        let horaFin = formatearHora(horaCorteObjetivo + 3);
+        document.getElementById('nb-win').innerText = horaInicio + " y " + horaFin + "HS";
+    }
+}
 
                         // Forzamos el objetivo a número para evitar que la suma encole textos
                         let horaCorteObjetivo = parseFloat(HORARIOS[diaObjetivo]);
